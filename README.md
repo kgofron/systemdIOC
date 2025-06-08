@@ -8,8 +8,7 @@ Start systemd serval.service from EPICS
 * serval.service: Start request repeated too quickly.
 * serval.service: Failed with result 'exit-code'.
 ```
-*  Reset serval.service
-    * systemctl reset-failed <service name>
+* systemctl reset-failed serval.service
 
 ## Info
 * man systemd.directives 
