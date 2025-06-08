@@ -1,6 +1,8 @@
 # systemdIOC
 Start systemd serval.service from EPICS
-1. 
+1. make; ./systemd_control
+2. build_andrun.sh
+3. See ASI PolicyKit for netTune: com.asi.serval.policy
 
 ## Service not starting
 ```
