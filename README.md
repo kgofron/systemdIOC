@@ -1,13 +1,15 @@
 # systemdIOC
 Start systemd serval.service from EPICS
+1. 
 
 ## Service not starting
+```
 * Failed to start Serval.
 * serval.service: Start request repeated too quickly.
 * serval.service: Failed with result 'exit-code'.
-
-## Reset
-* systemctl reset-failed <service name>
+```
+*  Reset serval.service
+    * systemctl reset-failed <service name>
 
 ## Info
 * man systemd.directives 
