@@ -1,0 +1,15 @@
+record(bo, "$(P)$(R)Start") {
+    field(DTYP, "Serval")
+    field(SCAN, "Passive")
+    field(ZNAM, "Stop")
+    field(ONAM, "Start")
+    field(DESC, "Start/Stop Serval Service")
+    field(FLNK, "$(P)$(R)Status")
+}
+
+record(stringin, "$(P)$(R)Status") {
+    field(DTYP, "Soft Channel")
+    field(SCAN, "1 second")
+    field(INP, "systemctl is-active serval.service")
+    field(DESC, "Serval Service Status")
+} 
