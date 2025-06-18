@@ -96,3 +96,8 @@ sudo chmod u+s systemd_control
 * Run without password, and without sudo
     * ./systemd_control
 
+## Commands
+* sudo systemctl reset-failed serval.service
+* ps aux | grep systemdIoc | cat
+* busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager GetUnit serval.service | cat
+* busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager GetUnitByPID 1 | cat

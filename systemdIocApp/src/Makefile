@@ -21,7 +21,7 @@ LIB_SYS_LIBS += systemd
 # Link locally-provided code into the support library,
 # rather than directly into the IOC application, that
 # causes problems on Windows DLL builds
-systemdIocSupport_SRCS += servalDevSup.cpp
+systemdIocSupport_SRCS += systemdDevSup.cpp
 systemdIocSupport_SRCS += devsystemdIocVersion.c
 
 # Add systemd to the support library's dependencies

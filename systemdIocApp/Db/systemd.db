@@ -8,8 +8,7 @@ record(bo, "$(P)$(R)Start") {
 }
 
 record(stringin, "$(P)$(R)Status") {
-    field(DTYP, "Soft Channel")
+    field(DTYP, "Serval")
     field(SCAN, "1 second")
-    field(INP, "systemctl is-active serval.service")
     field(DESC, "Serval Service Status")
 } 
