@@ -5,4 +5,19 @@ polkit.addRule(function(action, subject) {
             return polkit.Result.YES;
         }
     }
+    if (action.id == "org.freedesktop.systemd1.reload-daemon") {
+        if (subject.user == "kg1") {
+            return polkit.Result.YES;
+        }
+    }
+    if (action.id == "org.freedesktop.systemd1.manage-unit-files") {
+        if (subject.user == "kg1") {
+            return polkit.Result.YES;
+        }
+    }
+    if (action.id == "org.freedesktop.systemd1.manage-unit-environments") {
+        if (subject.user == "kg1") {
+            return polkit.Result.YES;
+        }
+    }
 }); 
