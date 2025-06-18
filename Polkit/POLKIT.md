@@ -1,5 +1,6 @@
 # Polkit
 
+* sudo systemctl restart polkit
 * Redhat
   * sudo cp 50-serval-nopasswd.rules /etc/polkit-1/rules.d/
 * Ubuntu 22.04
