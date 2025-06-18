@@ -1,5 +1,2 @@
-include "base.dbd"
-
-# Register device support
 device(bo,INST_IO,devBoServal,"Serval")
 device(stringin,INST_IO,devStringinServal,"Serval") 

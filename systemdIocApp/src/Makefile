@@ -42,6 +42,7 @@ DBD += systemdIoc.dbd
 # systemdIoc.dbd will include these files:
 systemdIoc_DBD += base.dbd
 systemdIoc_DBD += devsystemdIocVersion.dbd
+systemdIoc_DBD += serval.dbd
 
 # systemdIoc_registerRecordDeviceDriver.cpp derives from systemdIoc.dbd
 systemdIoc_SRCS += systemdIoc_registerRecordDeviceDriver.cpp
