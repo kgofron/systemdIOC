@@ -1,23 +1,12 @@
 polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.systemd1.manage-units" &&
-        action.lookup("unit") == "serval.service") {
-        if (subject.user == "kg1") {
+    // Allow user kg1 to perform any systemd action without password
+    if (subject.user == "kg1") {
+        // Allow ALL systemd actions for user kg1
+        if (action.id.indexOf("org.freedesktop.systemd1") === 0) {
             return polkit.Result.YES;
         }
     }
-    if (action.id == "org.freedesktop.systemd1.reload-daemon") {
-        if (subject.user == "kg1") {
-            return polkit.Result.YES;
-        }
-    }
-    if (action.id == "org.freedesktop.systemd1.manage-unit-files") {
-        if (subject.user == "kg1") {
-            return polkit.Result.YES;
-        }
-    }
-    if (action.id == "org.freedesktop.systemd1.manage-unit-environments") {
-        if (subject.user == "kg1") {
-            return polkit.Result.YES;
-        }
-    }
+    
+    // Default: require authentication for other actions
+    return polkit.Result.AUTH_SELF_KEEP;
 }); 
