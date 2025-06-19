@@ -18,3 +18,5 @@ There should be no password prompt when starting serval.service
 * journalctl -u polkit
 * sudo systemctl restart polkit
 * pkexec systemctl start serval.service
+
+* journalctl -f | grep polkit
