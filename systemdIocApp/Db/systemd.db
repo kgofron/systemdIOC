@@ -9,6 +9,6 @@ record(bo, "$(P)$(R)Start") {
 
 record(stringin, "$(P)$(R)Status") {
     field(DTYP, "Serval")
-    field(SCAN, "1 second")
+    field(SCAN, "5 second")
     field(DESC, "Serval Service Status")
 } 
