@@ -11,3 +11,10 @@
 
 * ASI nictune
   * /usr/share/polkit-1/actions/com.asi.serval.policy
+
+## Polkit debuggin
+There should be no password prompt when starting serval.service
+
+* journalctl -u polkit
+* sudo systemctl restart polkit
+* pkexec systemctl start serval.service
