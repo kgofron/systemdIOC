@@ -47,10 +47,10 @@ static long read_stringin(void* prec) {
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message* reply = nullptr;
 
-    // Get the unit path
+    // Use ListUnits to get all units and find our specific service
     ret = sd_bus_call_method(bus, "org.freedesktop.systemd1", "/org/freedesktop/systemd1",
-                            "org.freedesktop.systemd1.Manager", "GetUnit",
-                            &error, &reply, "s", "serval.service");
+                            "org.freedesktop.systemd1.Manager", "ListUnits",
+                            &error, &reply, "");
     if (ret < 0) {
         recGblSetSevr(psi, COMM_ALARM, INVALID_ALARM);
         sd_bus_error_free(&error);
@@ -58,14 +58,108 @@ static long read_stringin(void* prec) {
         return -1;
     }
 
-    const char* unit_path;
-    ret = sd_bus_message_read(reply, "o", &unit_path);
-    sd_bus_message_unref(reply);
-    sd_bus_error_free(&error);
-    if (ret < 0) {
+    if (!reply) {
         recGblSetSevr(psi, COMM_ALARM, INVALID_ALARM);
         sd_bus_unref(bus);
         return -1;
+    }
+
+    // Parse the response to find our service
+    ret = sd_bus_message_enter_container(reply, 'a', "(ssssssouso)");
+    if (ret < 0) {
+        sd_bus_message_unref(reply);
+        recGblSetSevr(psi, COMM_ALARM, INVALID_ALARM);
+        sd_bus_unref(bus);
+        return -1;
+    }
+
+    std::string result = "not-found";
+
+    while ((ret = sd_bus_message_enter_container(reply, 'r', "ssssssouso")) > 0) {
+        const char *name = nullptr, *description = nullptr, *load_state = nullptr,
+                   *active_state = nullptr, *sub_state = nullptr, *following = nullptr,
+                   *unit_path = nullptr, *job_type = nullptr, *job_path = nullptr;
+        uint32_t job_id = 0;
+
+        ret = sd_bus_message_read(reply, "ssssssouso", &name, &description, &load_state,
+                                 &active_state, &sub_state, &following, &unit_path,
+                                 &job_id, &job_type, &job_path);
+        if (ret < 0) {
+            sd_bus_message_exit_container(reply);
+            break;
+        }
+
+        if (name && strcmp(name, "serval.service") == 0 && active_state) {
+            result = active_state;
+            sd_bus_message_exit_container(reply);
+            break;
+        }
+
+        sd_bus_message_exit_container(reply);
+    }
+
+    sd_bus_message_exit_container(reply);
+    sd_bus_message_unref(reply);
+
+    // If we found the service in the list, use its state
+    if (result != "not-found") {
+        // Map the state to our simplified status
+        if (strcmp(result.c_str(), "active") == 0) {
+            strncpy(psi->val, "running", sizeof(psi->val) - 1);
+            psi->val[sizeof(psi->val) - 1] = '\0';
+        } else if (strcmp(result.c_str(), "inactive") == 0) {
+            strncpy(psi->val, "stopped", sizeof(psi->val) - 1);
+            psi->val[sizeof(psi->val) - 1] = '\0';
+        } else if (strcmp(result.c_str(), "failed") == 0) {
+            strncpy(psi->val, "stopped", sizeof(psi->val) - 1);
+            psi->val[sizeof(psi->val) - 1] = '\0';
+        } else if (strcmp(result.c_str(), "activating") == 0) {
+            strncpy(psi->val, "starting", sizeof(psi->val) - 1);
+            psi->val[sizeof(psi->val) - 1] = '\0';
+        } else if (strcmp(result.c_str(), "deactivating") == 0) {
+            strncpy(psi->val, "stopping", sizeof(psi->val) - 1);
+            psi->val[sizeof(psi->val) - 1] = '\0';
+        } else {
+            // For any other state, use it as-is
+            strncpy(psi->val, result.c_str(), sizeof(psi->val) - 1);
+            psi->val[sizeof(psi->val) - 1] = '\0';
+        }
+        sd_bus_unref(bus);
+        return 0;
+    }
+
+    // If we didn't find the service in the list, it might be in a failed state
+    // Try to get it using GetUnit as fallback
+    sd_bus_error fallback_error = SD_BUS_ERROR_NULL;
+    sd_bus_message* fallback_reply = nullptr;
+    ret = sd_bus_call_method(bus, "org.freedesktop.systemd1", "/org/freedesktop/systemd1",
+                            "org.freedesktop.systemd1.Manager", "GetUnit",
+                            &fallback_error, &fallback_reply, "s", "serval.service");
+    if (ret < 0) {
+        // Service is not loaded or doesn't exist
+        strncpy(psi->val, "not-found", sizeof(psi->val) - 1);
+        psi->val[sizeof(psi->val) - 1] = '\0';
+        sd_bus_error_free(&fallback_error);
+        sd_bus_unref(bus);
+        return 0;
+    }
+
+    if (!fallback_reply) {
+        strncpy(psi->val, "unknown", sizeof(psi->val) - 1);
+        psi->val[sizeof(psi->val) - 1] = '\0';
+        sd_bus_unref(bus);
+        return 0;
+    }
+
+    const char* unit_path;
+    ret = sd_bus_message_read(fallback_reply, "o", &unit_path);
+    sd_bus_message_unref(fallback_reply);
+    sd_bus_error_free(&fallback_error);
+    if (ret < 0 || !unit_path) {
+        strncpy(psi->val, "unknown", sizeof(psi->val) - 1);
+        psi->val[sizeof(psi->val) - 1] = '\0';
+        sd_bus_unref(bus);
+        return 0;
     }
 
     // Get the unit's ActiveState
@@ -86,88 +180,28 @@ static long read_stringin(void* prec) {
     ret = sd_bus_message_read(state_reply, "v", "s", &active_state);
     sd_bus_message_unref(state_reply);
     sd_bus_error_free(&state_error);
-    if (ret < 0) {
-        recGblSetSevr(psi, COMM_ALARM, INVALID_ALARM);
-        sd_bus_unref(bus);
-        return -1;
-    }
-
-    // Handle empty or null active_state
-    if (!active_state || strlen(active_state) == 0) {
+    if (ret < 0 || !active_state) {
         strncpy(psi->val, "unknown", sizeof(psi->val) - 1);
         psi->val[sizeof(psi->val) - 1] = '\0';
         sd_bus_unref(bus);
         return 0;
     }
 
-    // Handle whitespace-only active_state
-    int is_whitespace_only = 1;
-    for (int i = 0; active_state[i] != '\0'; i++) {
-        if (active_state[i] != ' ' && active_state[i] != '\t' && active_state[i] != '\n' && active_state[i] != '\r' && active_state[i] != '`') {
-            is_whitespace_only = 0;
-            break;
-        }
-    }
-    if (is_whitespace_only) {
-        strncpy(psi->val, "unknown", sizeof(psi->val) - 1);
-        psi->val[sizeof(psi->val) - 1] = '\0';
-        sd_bus_unref(bus);
-        return 0;
-    }
-
-    // Get the unit's SubState for more detailed status
-    sd_bus_error substate_error = SD_BUS_ERROR_NULL;
-    sd_bus_message* substate_reply = nullptr;
-    ret = sd_bus_call_method(bus, "org.freedesktop.systemd1", unit_path,
-                            "org.freedesktop.DBus.Properties", "Get",
-                            &substate_error, &substate_reply, "ss",
-                            "org.freedesktop.systemd1.Unit", "SubState");
-    if (ret < 0) {
-        // Continue with just ActiveState if SubState fails
-        sd_bus_error_free(&substate_error);
-    } else {
-        const char* sub_state;
-        ret = sd_bus_message_read(substate_reply, "v", "s", &sub_state);
-        sd_bus_message_unref(substate_reply);
-        sd_bus_error_free(&substate_error);
-        if (ret >= 0 && sub_state && strlen(sub_state) > 0) {
-            // Apply the same status mapping logic to SubState
-            if (strcmp(sub_state, "running") == 0) {
-                strncpy(psi->val, "running", sizeof(psi->val) - 1);
-                psi->val[sizeof(psi->val) - 1] = '\0';
-            } else if (strcmp(sub_state, "failed") == 0) {
-                strncpy(psi->val, "stopped", sizeof(psi->val) - 1);
-                psi->val[sizeof(psi->val) - 1] = '\0';
-            } else if (strcmp(sub_state, "dead") == 0) {
-                strncpy(psi->val, "stopped", sizeof(psi->val) - 1);
-                psi->val[sizeof(psi->val) - 1] = '\0';
-            } else {
-                // Use SubState as-is for other states
-                strncpy(psi->val, sub_state, sizeof(psi->val) - 1);
-                psi->val[sizeof(psi->val) - 1] = '\0';
-            }
-            sd_bus_unref(bus);
-            return 0;
-        }
-    }
-
-    // Fallback to ActiveState
-    if (strcmp(active_state, "failed") == 0) {
-        // Check if it's actually just stopped by looking at the exit code
-        // For now, we'll assume it's stopped if it's "failed"
-        strncpy(psi->val, "stopped", sizeof(psi->val) - 1);
-        psi->val[sizeof(psi->val) - 1] = '\0';
-    } else if (strcmp(active_state, "active") == 0) {
+    // Map the fallback state to our simplified status
+    if (strcmp(active_state, "active") == 0) {
         strncpy(psi->val, "running", sizeof(psi->val) - 1);
         psi->val[sizeof(psi->val) - 1] = '\0';
     } else if (strcmp(active_state, "inactive") == 0) {
         strncpy(psi->val, "stopped", sizeof(psi->val) - 1);
         psi->val[sizeof(psi->val) - 1] = '\0';
-    } else if (strcmp(active_state, "deactivating") == 0) {
-        strncpy(psi->val, "stopping", sizeof(psi->val) - 1);
+    } else if (strcmp(active_state, "failed") == 0) {
+        strncpy(psi->val, "stopped", sizeof(psi->val) - 1);
         psi->val[sizeof(psi->val) - 1] = '\0';
     } else if (strcmp(active_state, "activating") == 0) {
         strncpy(psi->val, "starting", sizeof(psi->val) - 1);
+        psi->val[sizeof(psi->val) - 1] = '\0';
+    } else if (strcmp(active_state, "deactivating") == 0) {
+        strncpy(psi->val, "stopping", sizeof(psi->val) - 1);
         psi->val[sizeof(psi->val) - 1] = '\0';
     } else {
         // For any other state, use it as-is
