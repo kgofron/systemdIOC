@@ -57,11 +57,72 @@ public:
     }
 
     std::string getServiceStatus(const std::string& serviceName) {
+        if (!bus) {
+            return "Unknown";
+        }
+
         sd_bus_error error = SD_BUS_ERROR_NULL;
         sd_bus_message* reply = nullptr;
         int ret;
 
-        // First, get the unit path
+        // Use ListUnits to get all units and find our specific service
+        ret = sd_bus_call_method(bus,
+                               "org.freedesktop.systemd1",
+                               "/org/freedesktop/systemd1",
+                               "org.freedesktop.systemd1.Manager",
+                               "ListUnits",
+                               &error,
+                               &reply,
+                               "");
+
+        if (ret < 0) {
+            std::cerr << "Failed to list units: " << error.message << std::endl;
+            sd_bus_error_free(&error);
+            return "Unknown";
+        }
+
+        if (!reply) {
+            return "Unknown";
+        }
+
+        // Parse the response to find our service
+        ret = sd_bus_message_enter_container(reply, 'a', "(ssssssouso)");
+        if (ret < 0) {
+            sd_bus_message_unref(reply);
+            return "Unknown";
+        }
+
+        std::string result = "not-found";
+        
+        while ((ret = sd_bus_message_enter_container(reply, 'r', "ssssssouso")) > 0) {
+            const char *name = nullptr, *description = nullptr, *load_state = nullptr, *active_state = nullptr, *sub_state = nullptr, *following = nullptr, *unit_path = nullptr, *job_type = nullptr, *job_path = nullptr;
+            uint32_t job_id = 0;
+
+            ret = sd_bus_message_read(reply, "ssssssouso", &name, &description, &load_state, &active_state, &sub_state, &following, &unit_path, &job_id, &job_type, &job_path);
+            if (ret < 0) {
+                sd_bus_message_exit_container(reply);
+                break;
+            }
+
+            if (name && std::string(name) == serviceName && active_state) {
+                result = active_state;
+                sd_bus_message_exit_container(reply);
+                break;
+            }
+
+            sd_bus_message_exit_container(reply);
+        }
+
+        sd_bus_message_exit_container(reply);
+        sd_bus_message_unref(reply);
+        
+        // If we found the service in the list, return its state
+        if (result != "not-found") {
+            return result;
+        }
+        
+        // If we didn't find the service in the list, it might be in a failed state
+        // Try to get it using GetUnit
         ret = sd_bus_call_method(bus,
                                "org.freedesktop.systemd1",
                                "/org/freedesktop/systemd1",
@@ -73,20 +134,23 @@ public:
                                serviceName.c_str());
 
         if (ret < 0) {
-            std::cerr << "Failed to get unit path: " << error.message << std::endl;
-            sd_bus_error_free(&error);
+            // Service is not loaded or doesn't exist
+            return "not-found";
+        }
+
+        if (!reply) {
             return "Unknown";
         }
 
-        const char* unit_path;
+        const char* unit_path = nullptr;
         ret = sd_bus_message_read(reply, "o", &unit_path);
         sd_bus_message_unref(reply);
 
-        if (ret < 0) {
+        if (ret < 0 || !unit_path) {
             return "Unknown";
         }
 
-        // Now get the unit's ActiveState
+        // Get the ActiveState from the unit
         ret = sd_bus_call_method(bus,
                                "org.freedesktop.systemd1",
                                unit_path,
@@ -104,11 +168,15 @@ public:
             return "Unknown";
         }
 
-        const char* state;
+        if (!reply) {
+            return "Unknown";
+        }
+
+        const char* state = nullptr;
         ret = sd_bus_message_read(reply, "v", "s", &state);
         sd_bus_message_unref(reply);
 
-        if (ret < 0) {
+        if (ret < 0 || !state) {
             return "Unknown";
         }
 
@@ -133,9 +201,9 @@ int main() {
             std::cout << "Current service status: " << controller.getServiceStatus(serviceName) << std::endl;
         }
 
-        // Wait for 10 seconds
-        std::cout << "Waiting for 10 seconds..." << std::endl;
-        sleep(10);
+        // Wait for 3 seconds
+        std::cout << "Waiting for 3 seconds..." << std::endl;
+        sleep(3);
 
         std::cout << "Stopping serval.service..." << std::endl;
         if (controller.controlService(serviceName, "StopUnit")) {
@@ -143,10 +211,13 @@ int main() {
             std::cout << "Final service status: " << controller.getServiceStatus(serviceName) << std::endl;
         }
 
-        // Wait for 5 seconds after stopping
-        std::cout << "Waiting for 5 seconds after stopping..." << std::endl;
-        sleep(5);
-        std::cout << "Service status after 5 seconds: " << controller.getServiceStatus(serviceName) << std::endl;
+        // Infinite loop to monitor service status every 1 second
+        std::cout << "Starting continuous monitoring of " << serviceName << " (Ctrl+C to stop)..." << std::endl;
+        while (true) {
+            std::string status = controller.getServiceStatus(serviceName);
+            std::cout << "[" << time(nullptr) << "] Service status: " << status << std::endl;
+            sleep(1);
+        }
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
