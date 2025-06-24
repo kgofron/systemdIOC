@@ -237,18 +237,33 @@ static long write_bo(void* prec) {
 
     sd_bus_error error = SD_BUS_ERROR_NULL;
     sd_bus_message* reply = nullptr;
-    const char* action = pbo->val ? "StartUnit" : "StopUnit";
 
-    ret = sd_bus_call_method(bus,
-                           "org.freedesktop.systemd1",
-                           "/org/freedesktop/systemd1",
-                           "org.freedesktop.systemd1.Manager",
-                           action,
-                           &error,
-                           &reply,
-                           "ss",
-                           "serval.service",
-                           "replace");
+    // Check if this is the ResetFailed record or the Start/Stop record
+    if (strstr(pbo->name, "ResetFailed") != nullptr) {
+        // This is the ResetFailed record - perform ResetFailedUnit action
+        ret = sd_bus_call_method(bus,
+                               "org.freedesktop.systemd1",
+                               "/org/freedesktop/systemd1",
+                               "org.freedesktop.systemd1.Manager",
+                               "ResetFailedUnit",
+                               &error,
+                               &reply,
+                               "s",
+                               "serval.service");
+    } else {
+        // This is the Start/Stop record - perform StartUnit or StopUnit action
+        const char* action = pbo->val ? "StartUnit" : "StopUnit";
+        ret = sd_bus_call_method(bus,
+                               "org.freedesktop.systemd1",
+                               "/org/freedesktop/systemd1",
+                               "org.freedesktop.systemd1.Manager",
+                               action,
+                               &error,
+                               &reply,
+                               "ss",
+                               "serval.service",
+                               "replace");
+    }
 
     if (ret < 0) {
         recGblSetSevr(pbo, COMM_ALARM, INVALID_ALARM);
@@ -284,6 +299,22 @@ struct {
     DEVSUPFUN init;
     DEVSUPFUN init_record;
     DEVSUPFUN get_ioint_info;
+    DEVSUPFUN write_bo;
+} devBoServalReset = {
+    5,
+    NULL,
+    NULL,
+    init_record_bo,
+    NULL,
+    write_bo
+};
+
+struct {
+    long number;
+    DEVSUPFUN report;
+    DEVSUPFUN init;
+    DEVSUPFUN init_record;
+    DEVSUPFUN get_ioint_info;
     DEVSUPFUN read_stringin;
 } devStringinServal = {
     5,
@@ -295,4 +326,5 @@ struct {
 };
 
 epicsExportAddress(dset, devBoServal);
-epicsExportAddress(dset, devStringinServal); 
+epicsExportAddress(dset, devBoServalReset);
+epicsExportAddress(dset, devStringinServal);

@@ -1,2 +1,3 @@
 device(bo,INST_IO,devBoServal,"Serval")
+device(bo,INST_IO,devBoServalReset,"ServalReset")
 device(stringin,INST_IO,devStringinServal,"Serval") 

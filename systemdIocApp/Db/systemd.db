@@ -7,8 +7,17 @@ record(bo, "$(P)$(R)Start") {
     field(FLNK, "$(P)$(R)Status")
 }
 
+record(bo, "$(P)$(R)ResetFailed") {
+    field(DTYP, "ServalReset")
+    field(SCAN, "Passive")
+    field(ZNAM, "Reset")
+    field(ONAM, "Reset")
+    field(DESC, "Reset Failed Serval Service")
+    field(FLNK, "$(P)$(R)Status")
+}
+
 record(stringin, "$(P)$(R)Status") {
     field(DTYP, "Serval")
-    field(SCAN, "5 second")
+    field(SCAN, "1 second")
     field(DESC, "Serval Service Status")
 } 
