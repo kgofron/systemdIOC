@@ -13,4 +13,4 @@ sudo chmod u+s systemd_control
 echo "Running systemd_control..."
 ./systemd_control
 
-echo "Done!" 
+echo "Done!"
