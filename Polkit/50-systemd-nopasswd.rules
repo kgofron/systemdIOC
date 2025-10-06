@@ -7,6 +7,15 @@ polkit.addRule(function(action, subject) {
         }
     }
     
+    // Allow specific users to control systemd services without password
+    // Add more users as needed by adding additional conditions
+    var allowedUsers = ["kg1", "epics", "ioc"];
+    if (allowedUsers.indexOf(subject.user) !== -1) {
+        if (action.id.indexOf("org.freedesktop.systemd1") === 0) {
+            return polkit.Result.YES;
+        }
+    }
+    
     // Default: require authentication for other actions
     return polkit.Result.AUTH_SELF_KEEP;
 }); 
