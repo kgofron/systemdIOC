@@ -10,6 +10,22 @@
 #include <unistd.h>
 #include <errno.h>
 
+// Global variable to store the service name
+static char service_name[256] = "serval.service";
+
+// Function to set the service name
+void setServiceName(const char* name) {
+    if (name && strlen(name) < sizeof(service_name)) {
+        strncpy(service_name, name, sizeof(service_name) - 1);
+        service_name[sizeof(service_name) - 1] = '\0';
+    }
+}
+
+// Function to get the service name
+const char* getServiceName() {
+    return service_name;
+}
+
 static long init_record_bo(void* prec) {
     boRecord *pbo = (boRecord *)prec;
     pbo->udf = FALSE;
@@ -89,7 +105,7 @@ static long read_stringin(void* prec) {
             break;
         }
 
-        if (name && strcmp(name, "serval.service") == 0 && active_state) {
+        if (name && strcmp(name, getServiceName()) == 0 && active_state) {
             result = active_state;
             sd_bus_message_exit_container(reply);
             break;
@@ -134,7 +150,7 @@ static long read_stringin(void* prec) {
     sd_bus_message* fallback_reply = nullptr;
     ret = sd_bus_call_method(bus, "org.freedesktop.systemd1", "/org/freedesktop/systemd1",
                             "org.freedesktop.systemd1.Manager", "GetUnit",
-                            &fallback_error, &fallback_reply, "s", "serval.service");
+                            &fallback_error, &fallback_reply, "s", getServiceName());
     if (ret < 0) {
         // Service is not loaded or doesn't exist
         strncpy(psi->val, "not-found", sizeof(psi->val) - 1);
@@ -249,7 +265,7 @@ static long write_bo(void* prec) {
                                &error,
                                &reply,
                                "s",
-                               "serval.service");
+                               getServiceName());
     } else {
         // This is the Start/Stop record - perform StartUnit or StopUnit action
         const char* action = pbo->val ? "StartUnit" : "StopUnit";
@@ -261,7 +277,7 @@ static long write_bo(void* prec) {
                                &error,
                                &reply,
                                "ss",
-                               "serval.service",
+                               getServiceName(),
                                "replace");
     }
 
@@ -284,7 +300,7 @@ struct {
     DEVSUPFUN init_record;
     DEVSUPFUN get_ioint_info;
     DEVSUPFUN write_bo;
-} devBoServal = {
+} devBoSystemd = {
     5,
     NULL,
     NULL,
@@ -300,7 +316,7 @@ struct {
     DEVSUPFUN init_record;
     DEVSUPFUN get_ioint_info;
     DEVSUPFUN write_bo;
-} devBoServalReset = {
+} devBoSystemdReset = {
     5,
     NULL,
     NULL,
@@ -316,7 +332,7 @@ struct {
     DEVSUPFUN init_record;
     DEVSUPFUN get_ioint_info;
     DEVSUPFUN read_stringin;
-} devStringinServal = {
+} devStringinSystemd = {
     5,
     NULL,
     NULL,
@@ -325,6 +341,7 @@ struct {
     read_stringin
 };
 
-epicsExportAddress(dset, devBoServal);
-epicsExportAddress(dset, devBoServalReset);
-epicsExportAddress(dset, devStringinServal);
+epicsExportAddress(dset, devBoSystemd);
+epicsExportAddress(dset, devBoSystemdReset);
+epicsExportAddress(dset, devStringinSystemd);
+epicsExportAddress(void, setServiceName);
