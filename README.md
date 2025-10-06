@@ -1,16 +1,38 @@
 # systemdIOC
-Start systemd serval.service from EPICS
-1. make; ./systemd_control
-2. build_andrun.sh
-3. See ASI PolicyKit for netTune: com.asi.serval.policy
+Control any systemd service from EPICS
+
+This EPICS IOC provides generic systemd service control capabilities, allowing you to start, stop, reset failed state, and monitor the status of any systemd service.
+
+## Quick Start
+1. Configure the service name in `iocBoot/iocsystemd/st.cmd`
+2. Set up permissions (see Permissions section below)
+3. Build and run: `make; ./systemd_control`
+4. Or use the build script: `build_andrun.sh`
+
+## Configuration
+
+### Setting the Service Name
+Edit `iocBoot/iocsystemd/st.cmd` and modify these lines:
+```bash
+# Set the service name to control (default: serval.service)
+setServiceName("your-service.service")
+
+# Load record instances with service-specific descriptions
+dbLoadRecords("db/systemd.db", "P=yourprefix:,R=service:,SERVICE=your-service.service")
+```
+
+### Example Configurations
+- For SSH service: `setServiceName("ssh.service")`
+- For Apache web server: `setServiceName("apache2.service")`
+- For custom service: `setServiceName("myapp.service")`
 
 ## Service not starting
 ```
-* Failed to start Serval.
-* serval.service: Start request repeated too quickly.
-* serval.service: Failed with result 'exit-code'.
+* Failed to start YourService.
+* your-service.service: Start request repeated too quickly.
+* your-service.service: Failed with result 'exit-code'.
 ```
-* systemctl reset-failed serval.service
+* systemctl reset-failed your-service.service
 
 ## Info
 * man systemd.directives 
@@ -25,18 +47,22 @@ Sudoers approach: More flexible, easier to revoke access
 ```
 
 1. Polkit rule file
-    * sudo nano /etc/polkit-1/rules.d/50-serval-nopasswd.rules
+    * sudo nano /etc/polkit-1/rules.d/50-systemd-nopasswd.rules
 ```
 polkit.addRule(function(action, subject) {
-    if (action.id == "org.freedesktop.systemd1.manage-units" &&
-        action.lookup("unit") == "serval.service") {
-        if (subject.user == "your_username") {
+    // Allow specific users to control systemd services without password
+    var allowedUsers = ["your_username", "epics", "ioc"];
+    if (allowedUsers.indexOf(subject.user) !== -1) {
+        if (action.id.indexOf("org.freedesktop.systemd1") === 0) {
             return polkit.Result.YES;
         }
     }
+    
+    // Default: require authentication for other actions
+    return polkit.Result.AUTH_SELF_KEEP;
 });
 ```
-2. sudo visudo -f /etc/sudoers.d/serval-control
+2. sudo visudo -f /etc/sudoers.d/systemd-control
 ```
 your_username ALL=(ALL) NOPASSWD: /path/to/your/systemd_control
 ```
@@ -97,8 +123,24 @@ sudo chmod u+s systemd_control
     * ./systemd_control
 
 ## Commands
-* sudo systemctl reset-failed serval.service
+* sudo systemctl reset-failed your-service.service
 * ps aux | grep systemdIoc | cat
-* busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager GetUnit serval.service | cat
+* busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager GetUnit your-service.service | cat
 * busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager GetUnitByPID 1 | cat
-* watch -n 2 systemctl status serval.service
+* watch -n 2 systemctl status your-service.service
+
+## EPICS Records
+
+The IOC provides three EPICS records for each service:
+
+1. **Start/Stop Record** (`$(P)$(R)Start`): Binary output record to start (1) or stop (0) the service
+2. **Reset Failed Record** (`$(P)$(R)ResetFailed`): Binary output record to reset the failed state of the service
+3. **Status Record** (`$(P)$(R)Status`): String input record showing the current service status (running, stopped, starting, stopping, etc.)
+
+## Device Support
+
+The IOC uses generic device support types:
+- `Systemd`: For start/stop and status operations
+- `SystemdReset`: For reset failed operations
+
+These replace the previous serval-specific device types.
