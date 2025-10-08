@@ -1,18 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Saved on 2025-10-08 14:00:00 by kg1-->
+<!--Saved on 2025-10-08 16:00:00 by kg1-->
 <display version="2.0.0">
   <name>Systemd Service Control</name>
-  <width>800</width>
-  <height>600</height>
+  <width>900</width>
+  <height>400</height>
   <widget type="label" version="2.0.0">
     <name>Title</name>
     <text>Systemd Service Control</text>
-    <x>20</x>
-    <y>20</y>
-    <width>760</width>
-    <height>40</height>
+    <x>10</x>
+    <y>10</y>
+    <width>880</width>
+    <height>35</height>
     <font>
-      <font name="Header 1" family="Liberation Sans" style="BOLD" size="24.0">
+      <font name="Header 1" family="Liberation Sans" style="BOLD" size="20.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <!-- Column Headers -->
+  <widget type="label" version="2.0.0">
+    <name>HeaderServiceName</name>
+    <text>Service Name</text>
+    <x>10</x>
+    <y>55</y>
+    <width>200</width>
+    <height>25</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="60" green="60" blue="60">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>HeaderStatus</name>
+    <text>Status</text>
+    <x>220</x>
+    <y>55</y>
+    <width>150</width>
+    <height>25</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="60" green="60" blue="60">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>HeaderActions</name>
+    <text>Actions</text>
+    <x>380</x>
+    <y>55</y>
+    <width>510</width>
+    <height>25</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="60" green="60" blue="60">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <!-- Service Row 1: $(P)$(R) -->
+  <widget type="label" version="2.0.0">
+    <name>ServiceName1</name>
+    <text>$(SERVICE=$(P)$(R))</text>
+    <x>10</x>
+    <y>90</y>
+    <width>200</width>
+    <height>30</height>
+    <font>
+      <font name="Default" family="Liberation Sans" style="REGULAR" size="12.0">
       </font>
     </font>
     <foreground_color>
@@ -24,33 +118,18 @@
       </color>
     </background_color>
     <transparent>false</transparent>
-    <horizontal_alignment>1</horizontal_alignment>
-    <vertical_alignment>1</vertical_alignment>
-    <border_alarm_sensitive>false</border_alarm_sensitive>
-  </widget>
-  <widget type="label" version="2.0.0">
-    <name>StatusLabel</name>
-    <text>Service Status:</text>
-    <x>20</x>
-    <y>80</y>
-    <width>150</width>
-    <height>30</height>
-    <font>
-      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
-      </font>
-    </font>
     <horizontal_alignment>0</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
   </widget>
   <widget type="textupdate" version="2.0.0">
-    <name>ServiceStatus</name>
+    <name>Status1</name>
     <pv_name>$(P)$(R)Status</pv_name>
-    <x>180</x>
-    <y>80</y>
-    <width>200</width>
+    <x>220</x>
+    <y>90</y>
+    <width>150</width>
     <height>30</height>
     <font>
-      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
       </font>
     </font>
     <foreground_color>
@@ -103,22 +182,8 @@
       </rule>
     </rules>
   </widget>
-  <widget type="label" version="2.0.0">
-    <name>ControlLabel</name>
-    <text>Control:</text>
-    <x>20</x>
-    <y>130</y>
-    <width>150</width>
-    <height>30</height>
-    <font>
-      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
-      </font>
-    </font>
-    <horizontal_alignment>0</horizontal_alignment>
-    <vertical_alignment>1</vertical_alignment>
-  </widget>
   <widget type="action_button" version="3.0.0">
-    <name>StartButton</name>
+    <name>StartButton1</name>
     <actions>
       <action type="write_pv">
         <pv_name>$(P)$(R)Start</pv_name>
@@ -127,10 +192,10 @@
       </action>
     </actions>
     <text>Start</text>
-    <x>180</x>
-    <y>130</y>
+    <x>380</x>
+    <y>90</y>
     <width>100</width>
-    <height>40</height>
+    <height>30</height>
     <foreground_color>
       <color red="255" green="255" blue="255">
       </color>
@@ -140,12 +205,12 @@
       </color>
     </background_color>
     <font>
-      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
       </font>
     </font>
   </widget>
   <widget type="action_button" version="3.0.0">
-    <name>StopButton</name>
+    <name>StopButton1</name>
     <actions>
       <action type="write_pv">
         <pv_name>$(P)$(R)Start</pv_name>
@@ -154,10 +219,10 @@
       </action>
     </actions>
     <text>Stop</text>
-    <x>290</x>
-    <y>130</y>
+    <x>490</x>
+    <y>90</y>
     <width>100</width>
-    <height>40</height>
+    <height>30</height>
     <foreground_color>
       <color red="255" green="255" blue="255">
       </color>
@@ -167,12 +232,12 @@
       </color>
     </background_color>
     <font>
-      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
       </font>
     </font>
   </widget>
   <widget type="action_button" version="3.0.0">
-    <name>ResetFailedButton</name>
+    <name>ResetButton1</name>
     <actions>
       <action type="write_pv">
         <pv_name>$(P)$(R)ResetFailed</pv_name>
@@ -181,10 +246,10 @@
       </action>
     </actions>
     <text>Reset Failed</text>
-    <x>400</x>
-    <y>130</y>
+    <x>600</x>
+    <y>90</y>
     <width>120</width>
-    <height>40</height>
+    <height>30</height>
     <foreground_color>
       <color red="255" green="255" blue="255">
       </color>
@@ -194,19 +259,33 @@
       </color>
     </background_color>
     <font>
-      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
       </font>
     </font>
   </widget>
+  <!-- Instructions -->
   <widget type="label" version="2.0.0">
-    <name>InfoTitle</name>
-    <text>Status Information</text>
-    <x>20</x>
-    <y>200</y>
-    <width>760</width>
-    <height>30</height>
+    <name>Instructions</name>
+    <text>Instructions:
+• Green = running, Red = stopped, Orange = starting/stopping, Gray = not-found
+• To add more services: duplicate this screen and change the macros (P, R, SERVICE)
+• Or create an embedded display with multiple instances
+
+PV Macros:
+  P = PV prefix (e.g., serval:, emulator:)
+  R = Record suffix (e.g., service:)
+  SERVICE = Service display name (optional, defaults to P+R)
+
+Example Usage:
+  P=serval:, R=service:, SERVICE=serval.service
+  P=emulator:, R=service:, SERVICE=emulator.service
+  P=system:, R=ssh:, SERVICE=ssh.service</text>
+    <x>10</x>
+    <y>140</y>
+    <width>880</width>
+    <height>250</height>
     <font>
-      <font name="Header 2" family="Liberation Sans" style="BOLD" size="18.0">
+      <font name="Default" family="Liberation Sans" style="REGULAR" size="11.0">
       </font>
     </font>
     <foreground_color>
@@ -214,52 +293,12 @@
       </color>
     </foreground_color>
     <background_color>
-      <color red="200" green="200" blue="200">
-      </color>
-    </background_color>
-    <transparent>false</transparent>
-    <horizontal_alignment>0</horizontal_alignment>
-    <vertical_alignment>1</vertical_alignment>
-  </widget>
-  <widget type="label" version="2.0.0">
-    <name>LegendLabel</name>
-    <text>Status Legend:
-• running (Green): Service is active and running
-• stopped (Red): Service is inactive/stopped  
-• starting (Orange): Service is starting
-• stopping (Orange): Service is stopping
-• not-found (Gray): Service not found
-
-Instructions:
-• Start Button: Click to start the service
-• Stop Button: Click to stop the service
-• Reset Failed: Click to reset failed state
-• Status updates every second
-
-PVs Used:
-• Status: $(P)$(R)Status
-• Start/Stop: $(P)$(R)Start
-• Reset Failed: $(P)$(R)ResetFailed</text>
-    <x>20</x>
-    <y>240</y>
-    <width>760</width>
-    <height>340</height>
-    <font>
-      <font name="Default" family="Liberation Sans" style="REGULAR" size="12.0">
-      </font>
-    </font>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color red="255" green="255" blue="255">
+      <color red="255" green="255" blue="200">
       </color>
     </background_color>
     <transparent>false</transparent>
     <horizontal_alignment>0</horizontal_alignment>
     <vertical_alignment>0</vertical_alignment>
     <wrap_words>true</wrap_words>
-    <border_alarm_sensitive>false</border_alarm_sensitive>
   </widget>
 </display>
