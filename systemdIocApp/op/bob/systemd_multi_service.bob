@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Multi-service display for systemd control-->
+<display version="2.0.0">
+  <name>Systemd Multi-Service Control</name>
+  <width>900</width>
+  <height>400</height>
+  <widget type="label" version="2.0.0">
+    <name>Title</name>
+    <text>Systemd Multi-Service Control</text>
+    <x>10</x>
+    <y>10</y>
+    <width>880</width>
+    <height>35</height>
+    <font>
+      <font name="Header 1" family="Liberation Sans" style="BOLD" size="20.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <!-- Column Headers -->
+  <widget type="label" version="2.0.0">
+    <name>HeaderServiceName</name>
+    <text>Service Name</text>
+    <x>10</x>
+    <y>55</y>
+    <width>200</width>
+    <height>25</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="60" green="60" blue="60">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>HeaderStatus</name>
+    <text>Status</text>
+    <x>220</x>
+    <y>55</y>
+    <width>150</width>
+    <height>25</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="60" green="60" blue="60">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>HeaderActions</name>
+    <text>Actions</text>
+    <x>380</x>
+    <y>55</y>
+    <width>510</width>
+    <height>25</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="60" green="60" blue="60">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <!-- Service Row 1: Serval -->
+  <widget type="label" version="2.0.0">
+    <name>ServiceName1</name>
+    <text>serval.service</text>
+    <x>10</x>
+    <y>90</y>
+    <width>200</width>
+    <height>30</height>
+    <font>
+      <font name="Default" family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>0</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>Status1</name>
+    <pv_name>serval:service:Status</pv_name>
+    <x>220</x>
+    <y>90</y>
+    <width>150</width>
+    <height>30</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <format>1</format>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <rules>
+      <rule name="StatusColor" prop_id="foreground_color" out_exp="false">
+        <exp bool_exp="pv0==&quot;running&quot;">
+          <value>
+            <color red="0" green="128" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;stopped&quot;">
+          <value>
+            <color red="255" green="0" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;starting&quot;">
+          <value>
+            <color red="255" green="165" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;stopping&quot;">
+          <value>
+            <color red="255" green="165" blue="0">
+            </color>
+          </value>
+        </exp>
+        <pv trig="true">serval:service:Status</pv>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StartButton1</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>serval:service:Start</pv_name>
+        <value>1</value>
+        <description>Start serval.service</description>
+      </action>
+    </actions>
+    <text>Start</text>
+    <x>380</x>
+    <y>90</y>
+    <width>100</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="0" green="128" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StopButton1</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>serval:service:Start</pv_name>
+        <value>0</value>
+        <description>Stop serval.service</description>
+      </action>
+    </actions>
+    <text>Stop</text>
+    <x>490</x>
+    <y>90</y>
+    <width>100</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="0" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>ResetButton1</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>serval:service:ResetFailed</pv_name>
+        <value>1</value>
+        <description>Reset Failed State</description>
+      </action>
+    </actions>
+    <text>Reset Failed</text>
+    <x>600</x>
+    <y>90</y>
+    <width>120</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="165" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <!-- Service Row 2: Emulator (Example - uncomment PVs as needed) -->
+  <widget type="label" version="2.0.0">
+    <name>ServiceName2</name>
+    <text>emulator.service</text>
+    <x>10</x>
+    <y>130</y>
+    <width>200</width>
+    <height>30</height>
+    <font>
+      <font name="Default" family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>0</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>Status2</name>
+    <pv_name>emulator:service:Status</pv_name>
+    <x>220</x>
+    <y>130</y>
+    <width>150</width>
+    <height>30</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <format>1</format>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <rules>
+      <rule name="StatusColor" prop_id="foreground_color" out_exp="false">
+        <exp bool_exp="pv0==&quot;running&quot;">
+          <value>
+            <color red="0" green="128" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;stopped&quot;">
+          <value>
+            <color red="255" green="0" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;starting&quot;">
+          <value>
+            <color red="255" green="165" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;stopping&quot;">
+          <value>
+            <color red="255" green="165" blue="0">
+            </color>
+          </value>
+        </exp>
+        <pv trig="true">emulator:service:Status</pv>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StartButton2</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>emulator:service:Start</pv_name>
+        <value>1</value>
+        <description>Start emulator.service</description>
+      </action>
+    </actions>
+    <text>Start</text>
+    <x>380</x>
+    <y>130</y>
+    <width>100</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="0" green="128" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StopButton2</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>emulator:service:Start</pv_name>
+        <value>0</value>
+        <description>Stop emulator.service</description>
+      </action>
+    </actions>
+    <text>Stop</text>
+    <x>490</x>
+    <y>130</y>
+    <width>100</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="0" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>ResetButton2</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>emulator:service:ResetFailed</pv_name>
+        <value>1</value>
+        <description>Reset Failed State</description>
+      </action>
+    </actions>
+    <text>Reset Failed</text>
+    <x>600</x>
+    <y>130</y>
+    <width>120</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="165" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <!-- Service Row 3: SSH (Example) -->
+  <widget type="label" version="2.0.0">
+    <name>ServiceName3</name>
+    <text>ssh.service</text>
+    <x>10</x>
+    <y>170</y>
+    <width>200</width>
+    <height>30</height>
+    <font>
+      <font name="Default" family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>0</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>Status3</name>
+    <pv_name>system:ssh:Status</pv_name>
+    <x>220</x>
+    <y>170</y>
+    <width>150</width>
+    <height>30</height>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <format>1</format>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <rules>
+      <rule name="StatusColor" prop_id="foreground_color" out_exp="false">
+        <exp bool_exp="pv0==&quot;running&quot;">
+          <value>
+            <color red="0" green="128" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;stopped&quot;">
+          <value>
+            <color red="255" green="0" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;starting&quot;">
+          <value>
+            <color red="255" green="165" blue="0">
+            </color>
+          </value>
+        </exp>
+        <exp bool_exp="pv0==&quot;stopping&quot;">
+          <value>
+            <color red="255" green="165" blue="0">
+            </color>
+          </value>
+        </exp>
+        <pv trig="true">system:ssh:Status</pv>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StartButton3</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>system:ssh:Start</pv_name>
+        <value>1</value>
+        <description>Start ssh.service</description>
+      </action>
+    </actions>
+    <text>Start</text>
+    <x>380</x>
+    <y>170</y>
+    <width>100</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="0" green="128" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StopButton3</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>system:ssh:Start</pv_name>
+        <value>0</value>
+        <description>Stop ssh.service</description>
+      </action>
+    </actions>
+    <text>Stop</text>
+    <x>490</x>
+    <y>170</y>
+    <width>100</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="0" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>ResetButton3</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>system:ssh:ResetFailed</pv_name>
+        <value>1</value>
+        <description>Reset Failed State</description>
+      </action>
+    </actions>
+    <text>Reset Failed</text>
+    <x>600</x>
+    <y>170</y>
+    <width>120</width>
+    <height>30</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="165" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="12.0">
+      </font>
+    </font>
+  </widget>
+  <!-- Legend -->
+  <widget type="label" version="2.0.0">
+    <name>Legend</name>
+    <text>Status Colors: Green=running | Red=stopped | Orange=starting/stopping | Gray=not-found
+Edit this screen to add/remove services. Each row controls one systemd service.</text>
+    <x>10</x>
+    <y>220</y>
+    <width>880</width>
+    <height>40</height>
+    <font>
+      <font name="Default" family="Liberation Sans" style="ITALIC" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="100">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="200">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>0</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <wrap_words>true</wrap_words>
+  </widget>
+</display>
+
