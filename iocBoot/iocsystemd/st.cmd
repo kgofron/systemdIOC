@@ -11,13 +11,21 @@ cd "${TOP}"
 dbLoadDatabase "dbd/systemdIoc.dbd"
 systemdIoc_registerRecordDeviceDriver pdbbase
 
-## Set the service name to control (default: serval.service)
-## Change this to control a different systemd service
-setServiceName("serval.service")
+## Load record instances for multiple systemd services
+## Each dbLoadRecords creates a new set of PVs for a different service
+## P=PV prefix, R=record suffix, SERVICE=systemd service name
 
-## Load record instances
-## P=prefix, R=record suffix, SERVICE=service name for descriptions
+## Example 1: Control serval.service
 dbLoadRecords("db/systemd.db", "P=serval:,R=service:,SERVICE=serval.service")
+
+## Example 2: Control another service (uncomment to enable)
+#dbLoadRecords("db/systemd.db", "P=emulator:,R=service:,SERVICE=emulator.service")
+
+## Example 3: Control ssh service (uncomment to enable)
+#dbLoadRecords("db/systemd.db", "P=system:,R=ssh:,SERVICE=ssh.service")
+
+## Example 4: Control apache2 service (uncomment to enable)
+#dbLoadRecords("db/systemd.db", "P=web:,R=server:,SERVICE=apache2.service")
 
 cd "${TOP}/iocBoot/${IOC}"
 iocInit

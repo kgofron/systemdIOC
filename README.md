@@ -11,20 +11,39 @@ This EPICS IOC provides generic systemd service control capabilities, allowing y
 
 ## Configuration
 
-### Setting the Service Name
-Edit `iocBoot/iocsystemd/st.cmd` and modify these lines:
-```bash
-# Set the service name to control (default: serval.service)
-setServiceName("your-service.service")
+### Controlling Multiple Services
+You can control multiple systemd services by loading the database multiple times with different parameters. Each `dbLoadRecords` call creates an independent set of PVs for a different service.
 
-# Load record instances with service-specific descriptions
-dbLoadRecords("db/systemd.db", "P=yourprefix:,R=service:,SERVICE=your-service.service")
+Edit `iocBoot/iocsystemd/st.cmd` and add multiple database loads:
+```bash
+## Control serval.service
+dbLoadRecords("db/systemd.db", "P=serval:,R=service:,SERVICE=serval.service")
+
+## Control emulator.service
+dbLoadRecords("db/systemd.db", "P=emulator:,R=service:,SERVICE=emulator.service")
+
+## Control ssh.service
+dbLoadRecords("db/systemd.db", "P=system:,R=ssh:,SERVICE=ssh.service")
+
+## Control apache2.service
+dbLoadRecords("db/systemd.db", "P=web:,R=server:,SERVICE=apache2.service")
 ```
 
-### Example Configurations
-- For SSH service: `setServiceName("ssh.service")`
-- For Apache web server: `setServiceName("apache2.service")`
-- For custom service: `setServiceName("myapp.service")`
+### Parameter Explanation
+- **P**: PV prefix (e.g., `serval:`, `emulator:`, `web:`)
+- **R**: Record suffix (e.g., `service:`, `ssh:`, `server:`)
+- **SERVICE**: Systemd service name (e.g., `serval.service`, `ssh.service`)
+
+### Example: Controlling Two Services
+```bash
+# Service 1: Database
+dbLoadRecords("db/systemd.db", "P=db:,R=postgres:,SERVICE=postgresql.service")
+# Creates PVs: db:postgres:Start, db:postgres:ResetFailed, db:postgres:Status
+
+# Service 2: Web Server
+dbLoadRecords("db/systemd.db", "P=web:,R=nginx:,SERVICE=nginx.service")
+# Creates PVs: web:nginx:Start, web:nginx:ResetFailed, web:nginx:Status
+```
 
 ## Service not starting
 ```

@@ -10,36 +10,75 @@
 #include <unistd.h>
 #include <errno.h>
 
-// Global variable to store the service name
-static char service_name[256] = "serval.service";
-
-// Function to set the service name
-void setServiceName(const char* name) {
-    if (name && strlen(name) < sizeof(service_name)) {
-        strncpy(service_name, name, sizeof(service_name) - 1);
-        service_name[sizeof(service_name) - 1] = '\0';
-    }
-}
-
-// Function to get the service name
-const char* getServiceName() {
-    return service_name;
-}
+// Structure to store device-specific data
+typedef struct {
+    char service_name[256];
+} SystemdDevicePrivate;
 
 static long init_record_bo(void* prec) {
     boRecord *pbo = (boRecord *)prec;
+    
+    // Allocate private data structure
+    SystemdDevicePrivate* dpvt = (SystemdDevicePrivate*)malloc(sizeof(SystemdDevicePrivate));
+    if (!dpvt) {
+        return -1;
+    }
+    
+    // Parse the OUT link to get service name
+    if (pbo->out.type == INST_IO) {
+        const char* parm = pbo->out.value.instio.string;
+        if (parm && strlen(parm) > 0) {
+            strncpy(dpvt->service_name, parm, sizeof(dpvt->service_name) - 1);
+            dpvt->service_name[sizeof(dpvt->service_name) - 1] = '\0';
+        } else {
+            strcpy(dpvt->service_name, "unknown.service");
+        }
+    } else {
+        strcpy(dpvt->service_name, "unknown.service");
+    }
+    
+    pbo->dpvt = dpvt;
     pbo->udf = FALSE;
     return 0;
 }
 
 static long init_record_stringin(void* prec) {
     stringinRecord *psi = (stringinRecord *)prec;
+    
+    // Allocate private data structure
+    SystemdDevicePrivate* dpvt = (SystemdDevicePrivate*)malloc(sizeof(SystemdDevicePrivate));
+    if (!dpvt) {
+        return -1;
+    }
+    
+    // Parse the INP link to get service name
+    if (psi->inp.type == INST_IO) {
+        const char* parm = psi->inp.value.instio.string;
+        if (parm && strlen(parm) > 0) {
+            strncpy(dpvt->service_name, parm, sizeof(dpvt->service_name) - 1);
+            dpvt->service_name[sizeof(dpvt->service_name) - 1] = '\0';
+        } else {
+            strcpy(dpvt->service_name, "unknown.service");
+        }
+    } else {
+        strcpy(dpvt->service_name, "unknown.service");
+    }
+    
+    psi->dpvt = dpvt;
     psi->udf = FALSE;
     return 0;
 }
 
 static long read_stringin(void* prec) {
     stringinRecord *psi = (stringinRecord *)prec;
+    SystemdDevicePrivate* dpvt = (SystemdDevicePrivate*)psi->dpvt;
+    
+    if (!dpvt) {
+        recGblSetSevr(psi, COMM_ALARM, INVALID_ALARM);
+        return -1;
+    }
+    
+    const char* service_name = dpvt->service_name;
     
     // Drop privileges to avoid password prompts
     uid_t current_uid = getuid();
@@ -105,7 +144,7 @@ static long read_stringin(void* prec) {
             break;
         }
 
-        if (name && strcmp(name, getServiceName()) == 0 && active_state) {
+        if (name && strcmp(name, service_name) == 0 && active_state) {
             result = active_state;
             sd_bus_message_exit_container(reply);
             break;
@@ -150,7 +189,7 @@ static long read_stringin(void* prec) {
     sd_bus_message* fallback_reply = nullptr;
     ret = sd_bus_call_method(bus, "org.freedesktop.systemd1", "/org/freedesktop/systemd1",
                             "org.freedesktop.systemd1.Manager", "GetUnit",
-                            &fallback_error, &fallback_reply, "s", getServiceName());
+                            &fallback_error, &fallback_reply, "s", service_name);
     if (ret < 0) {
         // Service is not loaded or doesn't exist
         strncpy(psi->val, "not-found", sizeof(psi->val) - 1);
@@ -231,6 +270,14 @@ static long read_stringin(void* prec) {
 
 static long write_bo(void* prec) {
     boRecord *pbo = (boRecord *)prec;
+    SystemdDevicePrivate* dpvt = (SystemdDevicePrivate*)pbo->dpvt;
+    
+    if (!dpvt) {
+        recGblSetSevr(pbo, COMM_ALARM, INVALID_ALARM);
+        return -1;
+    }
+    
+    const char* service_name = dpvt->service_name;
     
     // Drop privileges to avoid password prompts
     uid_t current_uid = getuid();
@@ -265,7 +312,7 @@ static long write_bo(void* prec) {
                                &error,
                                &reply,
                                "s",
-                               getServiceName());
+                               service_name);
     } else {
         // This is the Start/Stop record - perform StartUnit or StopUnit action
         const char* action = pbo->val ? "StartUnit" : "StopUnit";
@@ -277,7 +324,7 @@ static long write_bo(void* prec) {
                                &error,
                                &reply,
                                "ss",
-                               getServiceName(),
+                               service_name,
                                "replace");
     }
 
@@ -344,4 +391,3 @@ struct {
 epicsExportAddress(dset, devBoSystemd);
 epicsExportAddress(dset, devBoSystemdReset);
 epicsExportAddress(dset, devStringinSystemd);
-epicsExportAddress(void, setServiceName);
