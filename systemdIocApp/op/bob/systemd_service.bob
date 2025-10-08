@@ -1,392 +1,265 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<display version="2.0.0" class="org.csstudio.opibuilder.OPIRunner">
-  <id>0</id>
-  <name>systemd_service</name>
-  <x>0</x>
-  <y>0</y>
+<!--Saved on 2025-10-08 14:00:00 by kg1-->
+<display version="2.0.0">
+  <name>Systemd Service Control</name>
   <width>800</width>
   <height>600</height>
-  <widget type="Label" version="2.0.0">
-    <id>1</id>
+  <widget type="label" version="2.0.0">
     <name>Title</name>
+    <text>Systemd Service Control</text>
     <x>20</x>
     <y>20</y>
     <width>760</width>
     <height>40</height>
-    <text>Systemd Service Control</text>
     <font>
-      <opifont.name>Header 1</opifont.name>
-      <opifont.size>18</opifont.size>
-      <opifont.style>1</opifont.style>
+      <font name="Header 1" family="Liberation Sans" style="BOLD" size="24.0">
+      </font>
     </font>
     <foreground_color>
-      <color red="0" green="0" blue="0"/>
+      <color red="0" green="0" blue="0">
+      </color>
     </foreground_color>
     <background_color>
-      <color red="240" green="240" blue="240"/>
+      <color red="240" green="240" blue="240">
+      </color>
     </background_color>
-    <border_style>1</border_style>
-    <border_width>2</border_width>
-    <border_color>
-      <color red="0" green="0" blue="0"/>
-    </border_color>
+    <transparent>false</transparent>
     <horizontal_alignment>1</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
   </widget>
-  
-  <!-- Service Name Display -->
-  <widget type="Label" version="2.0.0">
-    <id>2</id>
-    <name>ServiceNameLabel</name>
+  <widget type="label" version="2.0.0">
+    <name>StatusLabel</name>
+    <text>Service Status:</text>
     <x>20</x>
     <y>80</y>
-    <width>200</width>
+    <width>150</width>
     <height>30</height>
-    <text>Service:</text>
     <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>14</opifont.size>
-      <opifont.style>1</opifont.style>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
     </font>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-  </widget>
-  
-  <widget type="TextUpdate" version="2.0.0">
-    <id>3</id>
-    <name>ServiceName</name>
-    <x>220</x>
-    <y>80</y>
-    <width>300</width>
-    <height>30</height>
-    <pv_name>$(P)$(R)ServiceName</pv_name>
-    <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>14</opifont.size>
-      <opifont.style>0</opifont.style>
-    </font>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="255" green="255" blue="255"/>
-    </background_color>
-    <border_style>1</border_style>
-    <border_width>1</border_width>
-    <border_color>
-      <color red="128" green="128" blue="128"/>
-    </border_color>
     <horizontal_alignment>0</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
   </widget>
-  
-  <!-- Service Status Section -->
-  <widget type="Label" version="2.0.0">
-    <id>4</id>
-    <name>StatusLabel</name>
-    <x>20</x>
-    <y>130</y>
-    <width>200</width>
-    <height>30</height>
-    <text>Status:</text>
-    <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>14</opifont.size>
-      <opifont.style>1</opifont.style>
-    </font>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-  </widget>
-  
-  <widget type="TextUpdate" version="2.0.0">
-    <id>5</id>
+  <widget type="textupdate" version="2.0.0">
     <name>ServiceStatus</name>
-    <x>220</x>
-    <y>130</y>
+    <pv_name>$(P)$(R)Status</pv_name>
+    <x>180</x>
+    <y>80</y>
     <width>200</width>
     <height>30</height>
-    <pv_name>$(P)$(R)Status</pv_name>
     <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>14</opifont.size>
-      <opifont.style>0</opifont.style>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
     </font>
     <foreground_color>
-      <color red="0" green="0" blue="0"/>
+      <color red="0" green="0" blue="0">
+      </color>
     </foreground_color>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255">
+      </color>
     </background_color>
-    <border_style>1</border_style>
-    <border_width>1</border_width>
-    <border_color>
-      <color red="128" green="128" blue="128"/>
-    </border_color>
+    <transparent>false</transparent>
+    <format>1</format>
+    <precision>0</precision>
     <horizontal_alignment>1</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
     <rules>
-      <rule name="StatusColor" prop_id="foreground_color">
-        <exp bool_exp="pv[0]==&quot;running&quot;">
+      <rule name="StatusColor" prop_id="foreground_color" out_exp="false">
+        <exp bool_exp="pv0==&quot;running&quot;">
           <value>
-            <color red="0" green="128" blue="0"/>
+            <color red="0" green="128" blue="0">
+            </color>
           </value>
         </exp>
-        <exp bool_exp="pv[0]==&quot;stopped&quot;">
+        <exp bool_exp="pv0==&quot;stopped&quot;">
           <value>
-            <color red="255" green="0" blue="0"/>
+            <color red="255" green="0" blue="0">
+            </color>
           </value>
         </exp>
-        <exp bool_exp="pv[0]==&quot;starting&quot;">
+        <exp bool_exp="pv0==&quot;starting&quot;">
           <value>
-            <color red="255" green="165" blue="0"/>
+            <color red="255" green="165" blue="0">
+            </color>
           </value>
         </exp>
-        <exp bool_exp="pv[0]==&quot;stopping&quot;">
+        <exp bool_exp="pv0==&quot;stopping&quot;">
           <value>
-            <color red="255" green="165" blue="0"/>
+            <color red="255" green="165" blue="0">
+            </color>
           </value>
         </exp>
-        <exp bool_exp="pv[0]==&quot;not-found&quot;">
+        <exp bool_exp="pv0==&quot;not-found&quot;">
           <value>
-            <color red="128" green="128" blue="128"/>
+            <color red="128" green="128" blue="128">
+            </color>
           </value>
         </exp>
+        <pv trig="true">$(P)$(R)Status</pv>
       </rule>
     </rules>
   </widget>
-  
-  <!-- Control Buttons Section -->
-  <widget type="Label" version="2.0.0">
-    <id>6</id>
+  <widget type="label" version="2.0.0">
     <name>ControlLabel</name>
-    <x>20</x>
-    <y>180</y>
-    <width>200</width>
-    <height>30</height>
     <text>Control:</text>
+    <x>20</x>
+    <y>130</y>
+    <width>150</width>
+    <height>30</height>
     <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>14</opifont.size>
-      <opifont.style>1</opifont.style>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
     </font>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-  </widget>
-  
-  <!-- Start/Stop Button -->
-  <widget type="ActionButton" version="2.0.0">
-    <id>7</id>
-    <name>StartStopButton</name>
-    <x>220</x>
-    <y>180</y>
-    <width>120</width>
-    <height>40</height>
-    <text>Start</text>
-    <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>12</opifont.size>
-      <opifont.style>1</opifont.style>
-    </font>
-    <foreground_color>
-      <color red="255" green="255" blue="255"/>
-    </foreground_color>
-    <background_color>
-      <color red="0" green="128" blue="0"/>
-    </background_color>
-    <border_style>1</border_style>
-    <border_width>2</border_width>
-    <border_color>
-      <color red="0" green="0" blue="0"/>
-    </border_color>
-    <horizontal_alignment>1</horizontal_alignment>
+    <horizontal_alignment>0</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StartButton</name>
     <actions>
-      <action type="WRITE_PV" version="2.0.0">
+      <action type="write_pv">
         <pv_name>$(P)$(R)Start</pv_name>
         <value>1</value>
-        <confirm_message>Are you sure you want to start the service?</confirm_message>
+        <description>Start Service</description>
       </action>
     </actions>
-    <rules>
-      <rule name="ButtonText" prop_id="text">
-        <exp bool_exp="pv[0]==1">
-          <value>Stop</value>
-        </exp>
-        <exp bool_exp="pv[0]==0">
-          <value>Start</value>
-        </exp>
-      </rule>
-      <rule name="ButtonColor" prop_id="background_color">
-        <exp bool_exp="pv[0]==1">
-          <value>
-            <color red="255" green="0" blue="0"/>
-          </value>
-        </exp>
-        <exp bool_exp="pv[0]==0">
-          <value>
-            <color red="0" green="128" blue="0"/>
-          </value>
-        </exp>
-      </rule>
-      <rule name="ButtonAction" prop_id="actions">
-        <exp bool_exp="pv[0]==1">
-          <value>
-            <action type="WRITE_PV" version="2.0.0">
-              <pv_name>$(P)$(R)Start</pv_name>
-              <value>0</value>
-              <confirm_message>Are you sure you want to stop the service?</confirm_message>
-            </action>
-          </value>
-        </exp>
-        <exp bool_exp="pv[0]==0">
-          <value>
-            <action type="WRITE_PV" version="2.0.0">
-              <pv_name>$(P)$(R)Start</pv_name>
-              <value>1</value>
-              <confirm_message>Are you sure you want to start the service?</confirm_message>
-            </action>
-          </value>
-        </exp>
-      </rule>
-    </rules>
-  </widget>
-  
-  <!-- Reset Failed Button -->
-  <widget type="ActionButton" version="2.0.0">
-    <id>8</id>
-    <name>ResetFailedButton</name>
-    <x>360</x>
-    <y>180</y>
-    <width>120</width>
+    <text>Start</text>
+    <x>180</x>
+    <y>130</y>
+    <width>100</width>
     <height>40</height>
-    <text>Reset Failed</text>
-    <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>12</opifont.size>
-      <opifont.style>1</opifont.style>
-    </font>
     <foreground_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255">
+      </color>
     </foreground_color>
     <background_color>
-      <color red="255" green="165" blue="0"/>
+      <color red="0" green="128" blue="0">
+      </color>
     </background_color>
-    <border_style>1</border_style>
-    <border_width>2</border_width>
-    <border_color>
-      <color red="0" green="0" blue="0"/>
-    </border_color>
-    <horizontal_alignment>1</horizontal_alignment>
-    <vertical_alignment>1</vertical_alignment>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>StopButton</name>
     <actions>
-      <action type="WRITE_PV" version="2.0.0">
+      <action type="write_pv">
+        <pv_name>$(P)$(R)Start</pv_name>
+        <value>0</value>
+        <description>Stop Service</description>
+      </action>
+    </actions>
+    <text>Stop</text>
+    <x>290</x>
+    <y>130</y>
+    <width>100</width>
+    <height>40</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="0" blue="0">
+      </color>
+    </background_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>ResetFailedButton</name>
+    <actions>
+      <action type="write_pv">
         <pv_name>$(P)$(R)ResetFailed</pv_name>
         <value>1</value>
-        <confirm_message>Are you sure you want to reset the failed state?</confirm_message>
+        <description>Reset Failed State</description>
       </action>
     </actions>
-  </widget>
-  
-  <!-- Status Information Panel -->
-  <widget type="Label" version="2.0.0">
-    <id>9</id>
-    <name>InfoLabel</name>
-    <x>20</x>
-    <y>250</y>
-    <width>760</width>
-    <height>30</height>
-    <text>Status Information</text>
-    <font>
-      <opifont.name>Header 2</opifont.name>
-      <opifont.size>14</opifont.size>
-      <opifont.style>1</opifont.style>
-    </font>
+    <text>Reset Failed</text>
+    <x>400</x>
+    <y>130</y>
+    <width>120</width>
+    <height>40</height>
     <foreground_color>
-      <color red="0" green="0" blue="0"/>
+      <color red="255" green="255" blue="255">
+      </color>
     </foreground_color>
     <background_color>
-      <color red="240" green="240" blue="240"/>
+      <color red="255" green="165" blue="0">
+      </color>
     </background_color>
-    <border_style>1</border_style>
-    <border_width>1</border_width>
-    <border_color>
-      <color red="128" green="128" blue="128"/>
-    </border_color>
+    <font>
+      <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+      </font>
+    </font>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>InfoTitle</name>
+    <text>Status Information</text>
+    <x>20</x>
+    <y>200</y>
+    <width>760</width>
+    <height>30</height>
+    <font>
+      <font name="Header 2" family="Liberation Sans" style="BOLD" size="18.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
     <horizontal_alignment>0</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
   </widget>
-  
-  <!-- Status Legend -->
-  <widget type="Label" version="2.0.0">
-    <id>10</id>
+  <widget type="label" version="2.0.0">
     <name>LegendLabel</name>
-    <x>20</x>
-    <y>290</y>
-    <width>760</width>
-    <height>200</height>
     <text>Status Legend:
 • running (Green): Service is active and running
-• stopped (Red): Service is inactive/stopped
-• starting (Orange): Service is in the process of starting
-• stopping (Orange): Service is in the process of stopping
-• not-found (Gray): Service is not found or not loaded
-• unknown (Black): Service state is unknown
+• stopped (Red): Service is inactive/stopped  
+• starting (Orange): Service is starting
+• stopping (Orange): Service is stopping
+• not-found (Gray): Service not found
 
-Control Instructions:
-• Start/Stop Button: Click to start (green) or stop (red) the service
-• Reset Failed Button: Click to reset the failed state of the service
-• Status updates automatically every second
-• Confirmation dialogs appear before performing actions</text>
+Instructions:
+• Start Button: Click to start the service
+• Stop Button: Click to stop the service
+• Reset Failed: Click to reset failed state
+• Status updates every second
+
+PVs Used:
+• Status: $(P)$(R)Status
+• Start/Stop: $(P)$(R)Start
+• Reset Failed: $(P)$(R)ResetFailed</text>
+    <x>20</x>
+    <y>240</y>
+    <width>760</width>
+    <height>340</height>
     <font>
-      <opifont.name>Default</opifont.name>
-      <opifont.size>10</opifont.size>
-      <opifont.style>0</opifont.style>
+      <font name="Default" family="Liberation Sans" style="REGULAR" size="12.0">
+      </font>
     </font>
     <foreground_color>
-      <color red="0" green="0" blue="0"/>
+      <color red="0" green="0" blue="0">
+      </color>
     </foreground_color>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255">
+      </color>
     </background_color>
-    <border_style>1</border_style>
-    <border_width>1</border_width>
-    <border_color>
-      <color red="200" green="200" blue="200"/>
-    </border_color>
+    <transparent>false</transparent>
     <horizontal_alignment>0</horizontal_alignment>
     <vertical_alignment>0</vertical_alignment>
-  </widget>
-  
-  <!-- Auto-refresh timer -->
-  <widget type="Script" version="2.0.0">
-    <id>11</id>
-    <name>AutoRefresh</name>
-    <x>0</x>
-    <y>0</y>
-    <width>0</width>
-    <height>0</height>
-    <scriptText>// Auto-refresh script to update status every 5 seconds
-importPackage(Packages.org.csstudio.opibuilder.scriptUtil);
-importPackage(Packages.org.csstudio.opibuilder.util);
-
-// Refresh the status PV every 5 seconds
-var timer = new java.util.Timer();
-var task = new java.util.TimerTask() {
-    run: function() {
-        try {
-            var statusPV = ScriptUtil.getPV("$(P)$(R)Status");
-            if (statusPV != null) {
-                statusPV.requestValueUpdate();
-            }
-        } catch (e) {
-            // Ignore errors
-        }
-    }
-};
-
-timer.schedule(task, 0, 5000); // Start immediately, repeat every 5 seconds</scriptText>
+    <wrap_words>true</wrap_words>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
   </widget>
 </display>
