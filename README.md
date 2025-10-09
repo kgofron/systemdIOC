@@ -3,11 +3,36 @@ Control any systemd service from EPICS
 
 This EPICS IOC provides generic systemd service control capabilities, allowing you to start, stop, reset failed state, and monitor the status of any systemd service.
 
+## Dependencies
+
+### System Libraries
+The IOC requires the systemd development libraries to build:
+
+**Debian/Ubuntu:**
+```bash
+sudo apt-get install libsystemd-dev
+```
+
+**RedHat/CentOS/Fedora:**
+```bash
+sudo yum install systemd-devel
+```
+
+**Arch Linux:**
+```bash
+sudo pacman -S systemd-libs
+```
+
+### EPICS Base
+- EPICS Base 7.x or later
+- Standard EPICS build tools
+
 ## Quick Start
-1. Configure the service name in `iocBoot/iocsystemd/st.cmd`
-2. Set up permissions (see Permissions section below)
-3. Build and run: `make; ./systemd_control`
-4. Or use the build script: `build_andrun.sh`
+1. Install dependencies (see above)
+2. Configure the service name in `iocBoot/iocsystemd/st.cmd`
+3. Set up permissions (see Permissions section below)
+4. Build: `make`
+5. Run: `cd iocBoot/iocsystemd && ./st.cmd`
 
 ## Configuration
 
